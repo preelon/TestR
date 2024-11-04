@@ -71,4 +71,8 @@ case_data %>%
   filter(data_type== "presumed") %>%
   group_by(region) %>% summarise(mean_presumed=mean(count, na.rm=T))
 
-
+case_data %>%
+  filter(data_type == "presumed") %>%
+  group_by(region, woreda, year) %>%
+  summarise(mean_presumed_per_month = mean(count, na.rm = TRUE),
+            total_presumed_per_month = sum(count, na.rm = TRUE))
