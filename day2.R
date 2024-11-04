@@ -1,3 +1,4 @@
+library(tidyverse)
 case_data<-read.csv("data/training_case_data_long.csv")
 skim(case_data)
 str(case_data)
@@ -68,7 +69,6 @@ oromia_presumed <- case_data %>%
 sum(oromia_presumed$count,na.rm=T)
 case_data %>%
   filter(data_type== "presumed") %>%
-  group_by(region)
-summarise(mean_presumed=mean(count, na.rm=T))
+  group_by(region) %>% summarise(mean_presumed=mean(count, na.rm=T))
 
 
