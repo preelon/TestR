@@ -76,3 +76,87 @@ case_data %>%
   group_by(region, woreda, year) %>%
   summarise(mean_presumed_per_month = mean(count, na.rm = TRUE),
             total_presumed_per_month = sum(count, na.rm = TRUE))
+case_data %>%
+  filter(data_type=="presumed",
+         year(period)==2019)%>%
+  group_by(woreda, period)%>%
+  summarise(total_presumed_per_month=sum(count))%>%
+  arrange(total_presumed_per_month)
+case_data %>%
+  filter(data_type=="presumed",
+         year(period)==2019) %>%
+  group_by(woreda,period)%>%
+  summarise(total_presumed_per_month=sum(count))%>%
+  arrange(desc(total_presumed_per_month)) #to arrange in a descending order, the default is in ascending order
+#PDF2, Question 14
+case_data%>%
+  filter(data_type=="confirmed",year(period)==2019)%>%
+  group_by(region)%>%
+summarise(total_confirmed_2019=sum(count,na.rm = T))
+#PDF2, Question 15
+case_data %>%
+  group_by(region,month(period,label=T), year(period))%>%
+  summarise(total_cases=sum(count,na.rm = T))
+#PDF2, Question 16
+case_data %>%
+  filter(region=="Somali",year(period)==2020,
+         month(period)%in% 9:12|month(period) %in%1:4)%>%
+  group_by(woreda,year(period),month_name=month(period,label=T))%>%
+  summarise(sum(count,na.rm = T))
+case_data %>%
+  filter(woreda=="Awabel",period==ymd("2020-01-01"))
+
+wide_data<-case_data %>%
+  filter(woreda=="Awabel",period==ymd("2020-01-01"))%>%
+  pivot_wider(names_from = data_type,values_from = count)
+#how to create longer data format from wider format
+wide_data%>%
+  pivot_longer(names_to = "data_type", values_to = "count", 
+               cols =(c("presumed","confirmed")))
+case_data %>%
+  filter(data_type=="confirmed")%>%
+table(year(period),region)%>%
+  pivot_wider(names_from = region, values_from = count)
+wide_table_Q19 <- case_data %>%
+  filter(data_type=="confirmed")%>%
+  group_by(region,year(period))%>%
+  pivot_wider(names_from = region, values_from = count, values_fill = list(count = 0))
+
+    #practice with Amir
+#1.confirmed cases betwen 2019 and 2023:monthly filtered
+confirmed_2019_2023<-case_data %>%
+  filter(data_type=="confirmed",year(period)%in%2019:2023)%>%
+  group_by(period)%>%
+  summarise(total_confirmed= sum(count,na.rm = T))
+ 
+#2.visualize bar chart
+confirmed_2019_2023 %>%
+  ggplot(aes(x=period,y=total_confirmed)) + 
+  geom_col()
+
+#3.confirmed cases sep 2021
+confirmed_sep_2021<-case_data %>%
+  filter(data_type=="confirmed",month(period)==9, year(period)==2021) %>%
+  group_by(region,zone, woreda) %>%
+  summarise(total_confirmed=sum(count,na.rm = T))
+
+#4.visualization sep 2021 histo
+confirmed_sep_2021 %>%
+  ggplot(aes(x=total_confirmed)) +
+  geom_histogram() 
+  
+#5.confirmed cases between 2019 and 2023:yearly
+case_data %>%
+  filter(data_type=="confirmed", year(period) %in% 2019:2023) %>%
+  group_by(year=year(period)) %>%
+  summarise(total_confirmed_cases=sum (count,na.rm = T)) %>%
+  ggplot(aes(x=year,y=total_confirmed_cases)) +
+  geom_bar(stat = "identity", position = "dodge")
+
+#confirmed cases in west harerge zone with visualization
+case_data %>%
+  filter(region=="Oromia", zone=="West Hararge", data_type=="confirmed") %>%
+  group_by(region,zone,woreda,period) %>%
+  summarise(total_confirmed=sum(count,na.rm = T)) %>%
+  ggplot(aes(y=total_confirmed)) +
+  geom_boxplot()
